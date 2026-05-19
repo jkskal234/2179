@@ -1,0 +1,65 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Formula 1 circuits on the 2026 calendar shown on a world map, with Albert Park highlighted",
+  "width": 900,
+  "height": 420,
+  "background": "transparent",
+  "layer": [
+    {
+      "data": {
+        "url": "https://cdn.jsdelivr.net/npm/vega-datasets@2/data/world-110m.json",
+        "format": {"type": "topojson", "feature": "countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "#1a1a1a", "stroke": "#2e2e2e", "strokeWidth": 0.5}
+    },
+    {
+      "data": {
+        "values": [
+          {"circuit": "Albert Park",   "country": "Australia",    "lat": -37.85, "lon": 144.97, "aus": "yes"},
+          {"circuit": "Silverstone",   "country": "UK",           "lat": 52.07,  "lon": -1.02,  "aus": "no"},
+          {"circuit": "Monza",         "country": "Italy",        "lat": 45.62,  "lon": 9.28,   "aus": "no"},
+          {"circuit": "Monaco",        "country": "Monaco",       "lat": 43.74,  "lon": 7.43,   "aus": "no"},
+          {"circuit": "Spa",           "country": "Belgium",      "lat": 50.44,  "lon": 5.97,   "aus": "no"},
+          {"circuit": "Suzuka",        "country": "Japan",        "lat": 34.84,  "lon": 136.54, "aus": "no"},
+          {"circuit": "Interlagos",    "country": "Brazil",       "lat": -23.70, "lon": -46.70, "aus": "no"},
+          {"circuit": "COTA",          "country": "USA",          "lat": 30.13,  "lon": -97.64, "aus": "no"},
+          {"circuit": "Bahrain",       "country": "Bahrain",      "lat": 26.03,  "lon": 50.51,  "aus": "no"},
+          {"circuit": "Jeddah",        "country": "Saudi Arabia", "lat": 21.63,  "lon": 39.10,  "aus": "no"},
+          {"circuit": "Shanghai",      "country": "China",        "lat": 31.34,  "lon": 121.22, "aus": "no"},
+          {"circuit": "Miami",         "country": "USA",          "lat": 25.96,  "lon": -80.24, "aus": "no"},
+          {"circuit": "Imola",         "country": "Italy",        "lat": 44.34,  "lon": 11.71,  "aus": "no"},
+          {"circuit": "Barcelona",     "country": "Spain",        "lat": 41.57,  "lon": 2.26,   "aus": "no"},
+          {"circuit": "Red Bull Ring", "country": "Austria",      "lat": 47.22,  "lon": 14.76,  "aus": "no"},
+          {"circuit": "Hungaroring",   "country": "Hungary",      "lat": 47.58,  "lon": 19.25,  "aus": "no"},
+          {"circuit": "Zandvoort",     "country": "Netherlands",  "lat": 52.39,  "lon": 4.54,   "aus": "no"},
+          {"circuit": "Singapore",     "country": "Singapore",    "lat": 1.29,   "lon": 103.86, "aus": "no"},
+          {"circuit": "Lusail",        "country": "Qatar",        "lat": 25.49,  "lon": 51.45,  "aus": "no"},
+          {"circuit": "Las Vegas",     "country": "USA",          "lat": 36.17,  "lon": -115.15,"aus": "no"},
+          {"circuit": "Yas Marina",    "country": "UAE",          "lat": 24.47,  "lon": 54.60,  "aus": "no"},
+          {"circuit": "Mexico City",   "country": "Mexico",       "lat": 19.40,  "lon": -99.09, "aus": "no"},
+          {"circuit": "Montreal",      "country": "Canada",       "lat": 45.50,  "lon": -73.52, "aus": "no"},
+          {"circuit": "Baku",          "country": "Azerbaijan",   "lat": 40.37,  "lon": 49.85,  "aus": "no"}
+        ]
+      },
+      "mark": {"type": "circle", "opacity": 0.9},
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude":  {"field": "lat", "type": "quantitative"},
+        "size": {
+          "condition": {"test": "datum.aus === 'yes'", "value": 220},
+          "value": 55
+        },
+        "color": {
+          "condition": {"test": "datum.aus === 'yes'", "value": "#E10600"},
+          "value": "#555555"
+        },
+        "tooltip": [
+          {"field": "circuit", "title": "Circuit"},
+          {"field": "country", "title": "Country"}
+        ]
+      }
+    }
+  ],
+  "projection": {"type": "naturalEarth1"},
+  "config": {"view": {"stroke": "transparent"}}
+}
