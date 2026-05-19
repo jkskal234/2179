@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Australia &amp; Formula 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Titillium Web', sans-serif;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      line-height: 1.6;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #0d0d0d 0%, #1c0000 60%, #0d0d0d 100%);
+      border-bottom: 4px solid #E10600;
+      padding: 90px 40px 70px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #E10600;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 68px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+    .hero h1 em { color: #E10600; font-style: normal; }
+    .hero-sub {
+      max-width: 640px;
+      margin: 20px auto 0;
+      font-size: 17px;
+      color: #999;
+      font-weight: 300;
+    }
+    .hero-flags { font-size: 38px; margin-bottom: 18px; }
+
+    /* ── PAGE WRAPPER ── */
+    .page { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── SECTION ── */
+    .section { padding: 64px 0 20px; }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #E10600;
+      margin-bottom: 6px;
+    }
+    .section h2 {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .section-intro {
+      font-size: 15px;
+      color: #888;
+      max-width: 700px;
+      margin-bottom: 36px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 44px;
+    }
+    .stat {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-top: 3px solid #E10600;
+      padding: 20px 18px;
+      border-radius: 6px;
+    }
+    .stat-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: #E10600;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 7px;
+    }
+
+    /* ── CHART CARDS ── */
+    .card {
+      background: #141414;
+      border: 1px solid #242424;
+      border-radius: 10px;
+      padding: 26px 26px 18px;
+      margin-bottom: 26px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 18px;
+      max-width: 700px;
+      line-height: 1.65;
+    }
+
+    /* ── GRIDS ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+    }
+
+    /* ── DRIVER BIO CARDS ── */
+    .drivers-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    .driver-card {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .driver-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .webber::before   { background: #1E7FFF; }
+    .ricciardo::before{ background: #E10600; }
+    .piastri::before  { background: #FF8C00; }
+    .driver-name  { font-size: 19px; font-weight: 800; margin-bottom: 3px; }
+    .driver-years { font-size: 11px; color: #666; margin-bottom: 14px; letter-spacing: 0.04em; }
+    .driver-row   { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #222; font-size: 13px; }
+    .driver-row:last-child { border-bottom: none; }
+    .dr-label { color: #777; }
+    .dr-val   { font-weight: 700; }
+
+    /* ── ANNOTATION ── */
+    .annotation {
+      background: #160000;
+      border-left: 3px solid #E10600;
+      padding: 13px 18px;
+      border-radius: 0 6px 6px 0;
+      font-size: 14px;
+      color: #bbb;
+      margin: 0 0 26px;
+      line-height: 1.6;
+    }
+    .annotation strong { color: #fff; }
+
+    /* ── DIVIDER ── */
+    hr.divider { border: none; border-top: 1px solid #1c1c1c; margin: 10px 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid #1c1c1c;
+      padding: 34px 32px;
+      text-align: center;
+      color: #444;
+      font-size: 13px;
+      margin-top: 60px;
+    }
+
+    /* ── VEGA LOADING PLACEHOLDER ── */
+    .vega-placeholder {
+      background: #1a1a1a;
+      border-radius: 6px;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 14px;
+    }
+
+    @media (max-width: 720px) {
+      .two-col, .drivers-row { grid-template-columns: 1fr; }
+      .page { padding: 0 16px; }
+      .hero { padding: 60px 20px 50px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <p class="hero-eyebrow">Data Visualisation</p>
+  <h1>Australia &amp; <em>Formula 1</em></h1>
+  <p class="hero-sub">From the dusty circuits of the 1950s to the roaring grandstands of Albert Park,exploring Australia's remarkable footprint in the world's premier motorsport.</p>
+</div>
+
+<div class="page">
+
+  <!-- ═══ SECTION 1: OVERVIEW ═══ -->
+  <div class="section">
+    <p class="section-label">Overview</p>
+    <h2>Australia at a Glance</h2>
+    <p class="section-intro">Australia punches well above its weight in Formula 1, producing world champions, hosting a race that draws nearly half a million fans, and cultivating a fanbase that rivals any in the world.</p>
+
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Years of the Melbourne GP</div></div>
+      <div class="stat"><div class="stat-num">484K</div><div class="stat-label">2026 Albert Park attendance</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Australian World Champions</div></div>
+      <div class="stat"><div class="stat-num">1950</div><div class="stat-label">Year Aus drivers entered F1</div></div>
+      <div class="stat"><div class="stat-num">2037</div><div class="stat-label">Melbourne contract secured to</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Australian Grand Prix Weekend Attendance (1996-2026)</div>
+      <div class="card-desc">Melbourne has hosted the Australian Grand Prix since 1996. After years of steady figures, the post-pandemic era, supercharged by Oscar Piastri's rise, has driven attendance to record-breaking levels, cementing Albert Park as one of the world's best-attended race weekends.</div>
+      <div id="chart-attendance"></div>
+    </div>
+
+    <div class="annotation">
+      <strong>Record territory:</strong> The 2026 Australian Grand Prix attracted 483,934 fans across four days, nearly 160,000 more than the last pre-pandemic race in 2019, and closing in on the all-time record of 520,000 set in Adelaide in 1995.
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">GP Winners by Constructor at Albert Park</div>
+        <div class="card-desc">Which teams have dominated the Australian Grand Prix since 1996? Ferrari and McLaren lead the tally, but Mercedes and Red Bull have dominated the modern era.</div>
+        <div id="chart-constructors"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Australian Drivers — Career F1 Points</div>
+        <div class="card-desc">Total championship points accumulated by Australian drivers across their Formula 1 careers. The modern era has produced Australia's most prolific F1 drivers.</div>
+        <div id="chart-drivers-points"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 2: DRIVERS ═══ -->
+  <div class="section">
+    <p class="section-label">The Drivers</p>
+    <h2>Australia's Finest on the Grid</h2>
+    <p class="section-intro">From Jack Brabham's three world championships to Oscar Piastri's emergence as a genuine title contender, Australia has produced some of the sport's most exciting drivers across seven decades of competition.</p>
+
+    <div class="drivers-row">
+      <div class="driver-card webber">
+        <div class="driver-name">Mark Webber</div>
+        <div class="driver-years">2002–2013 · Red Bull Racing</div>
+        <div class="driver-row"><span class="dr-label">Career Points</span><span class="dr-val">1,047.5</span></div>
+        <div class="driver-row"><span class="dr-label">Race Wins</span><span class="dr-val">9</span></div>
+        <div class="driver-row"><span class="dr-label">Podiums</span><span class="dr-val">42</span></div>
+        <div class="driver-row"><span class="dr-label">Best Championship</span><span class="dr-val">3rd (2010)</span></div>
+        <div class="driver-row"><span class="dr-label">Seasons</span><span class="dr-val">12</span></div>
+      </div>
+      <div class="driver-card ricciardo">
+        <div class="driver-name">Daniel Ricciardo</div>
+        <div class="driver-years">2011–2023 · Red Bull, Renault, McLaren</div>
+        <div class="driver-row"><span class="dr-label">Career Points</span><span class="dr-val">1,311</span></div>
+        <div class="driver-row"><span class="dr-label">Race Wins</span><span class="dr-val">8</span></div>
+        <div class="driver-row"><span class="dr-label">Podiums</span><span class="dr-val">32</span></div>
+        <div class="driver-row"><span class="dr-label">Best Championship</span><span class="dr-val">3rd (2014)</span></div>
+        <div class="driver-row"><span class="dr-label">Seasons</span><span class="dr-val">13</span></div>
+      </div>
+      <div class="driver-card piastri">
+        <div class="driver-name">Oscar Piastri</div>
+        <div class="driver-years">2023–present · McLaren</div>
+        <div class="driver-row"><span class="dr-label">Career Points</span><span class="dr-val">389+</span></div>
+        <div class="driver-row"><span class="dr-label">Race Wins</span><span class="dr-val">4+</span></div>
+        <div class="driver-row"><span class="dr-label">Podiums</span><span class="dr-val">14+</span></div>
+        <div class="driver-row"><span class="dr-label">Best Championship</span><span class="dr-val">3rd (2024)</span></div>
+        <div class="driver-row"><span class="dr-label">Seasons</span><span class="dr-val">2+</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Championship Points Per Season — Webber vs Ricciardo vs Piastri</div>
+      <div class="card-desc">Each Australian driver's career arc tells a different story. Webber peaked alongside Vettel's dominant Red Bull era, Ricciardo shone brightest in 2014 before a difficult final chapter, and Piastri is already threatening to eclipse them both.</div>
+      <div id="chart-career"></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 3: GLOBAL ═══ -->
+  <div class="section">
+    <p class="section-label">Global Context</p>
+    <h2>Australia in the World of F1</h2>
+    <p class="section-intro">Albert Park is one of the very few Formula 1 venues in the Southern Hemisphere, making Australia a genuinely unique presence on the global calendar, and one of the sport's most passionate fanbases anywhere in the world.</p>
+
+    <div class="card">
+      <div class="card-title">Formula 1 Circuits Around the World — 2026 Calendar</div>
+      <div class="card-desc">Of the 24 races on the 2026 Formula 1 calendar, only three are held in the Southern Hemisphere. Albert Park in Melbourne is highlighted in red, a truly unique venue on a calendar heavily weighted towards Europe and the Middle East.</div>
+      <div id="chart-map"></div>
+    </div>
+
+    <div class="two-col" style="margin-top: 26px;">
+      <div class="card">
+        <div class="card-title">F1 Driver Nationalities — All-Time Top 10</div>
+        <div class="card-desc">Australia sits 8th among all nations for total F1 drivers produced, ahead of Switzerland and Finland, countries synonymous with F1 excellence.</div>
+        <div id="chart-nationalities"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Grid Position vs Finish at the Australian GP (2010–2024)</div>
+        <div class="card-desc">Does starting from pole guarantee a win at Albert Park? The scatter shows a general trend, but Albert Park's street circuit nature means upsets are far more common than at other venues.</div>
+        <div id="chart-gridfinish"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<footer>
+  <p><strong>Data sources:</strong> Jolpica F1 API (api.jolpi.ca/ergast/f1) &nbsp;·&nbsp; Australian Grand Prix Corporation &nbsp;·&nbsp; Formula 1 Official Records &nbsp;·&nbsp; Wikipedia F1 statistics</p>
+  <p style="margin-top:8px;">Visualisation by Jot Bajwa &nbsp;·&nbsp;</p>
+</footer>
+
+<script>
+  
+  window.addEventListener('load', function () {
+    const opts = { actions: false, renderer: 'svg' };
+
+    vegaEmbed('#chart-attendance',    'attendance.json',     opts).catch(console.error);
+    vegaEmbed('#chart-constructors',  'constructors.json',   opts).catch(console.error);
+    vegaEmbed('#chart-drivers-points','drivers_points.json', opts).catch(console.error);
+    vegaEmbed('#chart-career',        'career.json',         opts).catch(console.error);
+    vegaEmbed('#chart-map',           'map.json',            opts).catch(console.error);
+    vegaEmbed('#chart-nationalities', 'nationalities.json',  opts).catch(console.error);
+    vegaEmbed('#chart-gridfinish',    'gridfinish.json',     opts).catch(console.error);
+  });
+</script>
+</body>
+</html>
